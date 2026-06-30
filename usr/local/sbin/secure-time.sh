@@ -1,0 +1,176 @@
+#!/bin/sh
+
+# I am using privoxy
+http_proxy="http://127.0.0.1:8118"
+https_proxy="http://127.0.0.1:8118"
+
+# ==============================================================================
+# EXPANDED THREE-POOL INFRASTRUCTURE
+# https://github.com/Kicksecure/sdwdate/blob/master/etc/sdwdate.d/30_default.conf
+# ==============================================================================
+
+# 20
+POOL_0="
+https://www.bbcweb3hytmzhn5d532owbu6oqadra5z3ar726vq5kgwwn6aucdccrad.onion # https://web.archive.org/web/20220326121137/https://www.bbc.com/news/technology-50150981
+http://dlegal66uj5u2dvcbrev7vv6fjtwnd4moqu7j6jnd42rmbypv3coigyd.onion # https://web.archive.org/web/20210604191414/https://securityheaders.com/?q=https%3A%2F%2Fdecoded.legal%2F&followRedirects=on
+https://duckduckgogg42xjoc72x3sjasowoarfbgcmvfimaftt6twagswzczad.onion # https://web.archive.org/web/20210604193342/https://securityheaders.com/?q=https%3A%2F%2Fduckduckgo.com%2F&followRedirects=on
+https://protonmailrmez3lotccipshtkleegetolb73fuirgj7r4o4vfu7ozyd.onion # https://web.archive.org/web/20221025201520/https://proton.me/tor
+http://danielas3rtn54uwmofdo3x2bsdifr47huasnmbgqzfrec5ubupvtpid.onion # https://web.archive.org/web/20201231025809/https://danwin1210.me https://danwin1210.me Danial Services
+http://wasabiukrxmkdgve5kynjztuovbg43uxcbcxn6y2okcrsg7gb6jdmbad.onion # https://web.archive.org/web/20210604175753/https://wasabiwallet.io/
+http://blkchairbknpn73cfjhevhla7rkp4ed5gg2knctvv7it4lioy22defid.onion # https://web.archive.org/web/20210604180615/https://blockchair.com/
+http://startpagel6srwcjlue4zgq3zevrujfaow726kjytqbbjyrswwmjzcqd.onion/ # https://web.archive.org/web/20250821153215/https://support.startpage.com/hc/en-us/articles/24786602537364-Startpage-s-Tor-onion-service
+http://g7ejphhubv5idbbu3hb3wawrs5adw7tkx7yjabnf65xtzztgg4hcsqqd.onion # https://web.archive.org/web/20210604184215/https://defcon.org/
+http://m6rqq6kocsyugo2laitup5nn32bwm3lh677chuodjfmggczoafzwfcad.onion # https://web.archive.org/web/20210604184215/https://defcon.org/
+https://ezdhgsy2aw7zg54z6dqsutrduhl22moami5zv2zt6urr6vub7gs6wfad.onion # https://web.archive.org/web/20230924182800/https://securityheaders.com/?q=https%3A%2F%2Fforum.defcon.org%2F&followRedirects=on
+http://stormwayszuh4juycoy4kwoww5gvcu2c4tdtpkup667pdwe4qenzwayd.onion # https://web.archive.org/web/20210604190703/https://cryptostorm.is/
+http://monerotoruzizulg5ttgat2emf4d6fbmiea25detrmmy7erypseyteyd.onion # https://web.archive.org/web/20210604192249/https://www.getmonero.org/
+http://tv54samlti22655ohq3oaswm64cwf7ulp6wzkjcvdla2hagqcu7uokid.onion # https://web.archive.org/web/20210604192729/https://matt.traudt.xyz/
+http://metagerv65pwclop2rsfzg4jwowpavpwd6grhhlvdgsswvo6ii4akgyd.onion # https://web.archive.org/web/20210604193010/https://metager.org/tor
+http://zkaan2xfbuxia2wpf7ofnkbz6r5zdbbvxbunvp5g2iebopbfc4iqmbad.onion # https://web.archive.org/web/20210607180626/https://keys.openpgp.org/about/faq
+"
+
+# 18
+POOL_1="
+http://searxspbitokayvkhzhsnljde7rqmn7rvoga6e4waeub3h7ug3nghoad.onion # https://web.archive.org/web/20210525165705/https://searx.space/ https://searx.space
+http://lldan5gahapx5k7iafb3s4ikijc4ni7gx5iywdflkba5y2ezyg6sjgyd.onion # https://web.archive.org/web/20210310145458/https://onionshare.org/onion.txt OnionShare onionshare.org
+http://7sk2kov2xwx6cbc32phynrifegg6pklmzs7luwcggtzrnlsolxxuyfyd.onion # https://web.archive.org/web/20210111100825/https://www.systemli.org/service/onion/ https://www.systemli.org
+http://mjrkrqnlf26etelsi7zpkqc3dzlrzyurvmd3jksmndarzzbugz5xctid.onion # https://web.archive.org/web/20191025120405/https://www.systemli.org/en/service/etherpad.html https://www.systemli.org/en/service/etherpad/ https://pad.systemli.org
+http://liqr2cbsjzxmpw6savgh274tuzl34x6cd56h7m7ceatnrokveffm66ad.onion # https://web.archive.org/web/20260408185436/https://www.systemli.org/en/service/onion/ https://metadata.systemli.org/ https://archive.ph/znpZL
+http://srkggqkkzjzg2t6uz3lacbrpvm6plbthrs3pxvyrq467bvwyvg6umjyd.onion # https://web.archive.org/web/20260408185436/https://www.systemli.org/en/service/cloud/ https://www.systemli.org/en/service/cloud/ https://archive.ph/znpZL
+http://5b6kg6vyo4uk2w7y6eibyuhvpoxnkyaxkjqo72pomcbgbqfmenas3eqd.onion # https://web.archive.org/web/20260408185436/https://www.systemli.org/en/service/paste/ https://www.systemli.org/en/service/paste/ https://archive.ph/znpZL
+http://hzij2upbir4nxyqumx26pswe2dfmahc3pzuc4ds7lskycfkexzqvvdad.onion # https://web.archive.org/web/20260408185436/https://www.systemli.org/en/service/schleuder/ https://www.systemli.org/en/service/schleuder/ https://archive.ph/znpZL
+http://adstjh42bdvbtguo3lujq5c3hglv34oyqojh7c3mr5fojgbrs7mxobad.onion # https://web.archive.org/web/20260408185436/https://www.systemli.org/en/service/onion/ https://users.systemli.org/ https://archive.ph/znpZL
+http://rurcblzhmdk22kttfkel2zduhyu3r6to7knyc7wiorzrx5gw4c3lftad.onion # https://web.archive.org/web/20260502163104/https://www.cock.li/ https://www.cock.li/
+http://xdkriz6cn2avvcr2vks5lvvtmfojz2ohjzj4fhyuka55mvljeso2ztqd.onion # https://web.archive.org/web/20260502163104/https://www.cock.li/ https://mail.cock.li/
+http://fpfjxcrmw437h6z2xl3w4czl55kvkmxpapg37bbopsafdu7q454byxid.onion # https://web.archive.org/web/20210126151401/https://securityheaders.com/?q=freedom.press&followRedirects=on https://freedom.press
+http://7fgb4sq435vg7slw3u7m2ayze3imybpe7qm3htdklreoag3l6n2mtkyd.onion # https://web.archive.org/web/20210430195930/https://onion.debian.org/
+http://r6ogx3w3s6rg3gxm3kprurn77z2oim665yr5pcxhr76yit4g65y76zad.onion # https://web.archive.org/web/20210430195930/https://onion.debian.org/
+http://vww6ybal4bd7szmgncyruucpgfkqahzddi37ktceo3ah7ngmcopnpyyd.onion # https://web.archive.org/web/20200717041213/https://riseup.net/en/security/network-security/tor https://riseup.net/en/security/network-security/tor https://riseup.net
+http://7sbw6jufrirhyltzkslhcmkik4z7yrsmbpnptyritvz5nhbk35hncsqd.onion # https://web.archive.org/web/20200717041213/https://riseup.net/en/security/network-security/tor https://riseup.net/en/security/network-security/tor https://lists.riseup.net
+http://5gdvpfoh6kb2iqbizb37lzk2ddzrwa47m6rpdueg2m656fovmbhoptqd.onion # https://web.archive.org/web/20200717041213/https://riseup.net/en/security/network-security/tor https://mail.riseup.net https://riseup.net/en/security/network-security/tor
+http://kfahv6wfkbezjyg4r6mlhpmieydbebr5vkok5r34ya464gqz6c44bnyd.onion # https://web.archive.org/web/20200717041213/https://riseup.net/en/security/network-security/tor https://pad.riseup.net https://riseup.net/en/security/network-security/tor
+http://3xeiol2bnhrsqhcsaifwtnlqkylrerdspzua7bcjrh26qlrrrctfobid.onion # https://web.archive.org/web/20200717041213/https://riseup.net/en/security/network-security/tor https://account.riseup.net https://riseup.net/en/security/network-security/tor
+http://zkdppoahhqu5ihjqd4qqvyfd2bm4wejrhjosim67t6yopl77jitg2nad.onion # https://web.archive.org/web/20200717041213/https://riseup.net/en/security/network-security/tor https://we.riseup.net https://riseup.net/en/security/network-security/tor
+"
+
+# 33
+POOL_2="
+https://ej3kv4ebuugcmuwxctx5ic7zxh73rnxt42soi3tdneu2c2em55thufqd.onion # https://web.archive.org/web/20210604165016/https://securedrop.org/directory/new-york-times/
+https://vfnmxpa6fo4jdpyq3yneqhglluweax2uclvxkytfpmpkp5rsl75ir5qd.onion # https://web.archive.org/web/20210604171305/https://securedrop.org/directory/washington-post/
+http://537ztcntpbmspja4mkpxldpsoc46mqlssnsaklqnfw3gnlpj5glcjgid.onion # https://web.archive.org/web/20210604165129/https://securedrop.org/directory/nrk/
+http://sdolvtfhatvsysc6l34d65ymdwxcujausv7k5jk4cy5ttzhjoi6fzvyd.onion # https://web.archive.org/web/20201217013835/https://securedrop.org/ https://securedrop.org
+## FPF temporarily delisted - detected issues with this instance.
+## Re-enable once relisted at https://securedrop.org/directory/abc/.
+#http://dqa4zahticcobfq5rmmmbewbdtyiznbl75hu23k4i37y7yfoosrh7mqd.onion # https://web.archive.org/web/20221010170235/https://securedrop.org/directory/abc/
+http://tiykfvhb562gheutfnedysnhrxpxoztyszkqyroloyepwzxmxien77id.onion # https://web.archive.org/web/20210604162929/https://securedrop.org/directory/aftenposten-as/
+http://xm33ge4kupk5o66eqxcd2r4fqcplpqb2sbdduf5z2nw4g2jrxe57luid.onion # https://web.archive.org/web/20210604172805/https://securedrop.org/directory/aftonbladet/
+http://ogdwaroarq4p6rnfn2hl4crvldyruyc2g24435qtxmd3twhevg7dsqid.onion # https://web.archive.org/web/20210604173144/https://securedrop.org/directory/bloomberg-news/
+http://3qqupamfznjrai6p4td7epa6pvidpumas2xjsihat73z23f37l2y52id.onion # https://web.archive.org/web/20260414025244/https://securedrop.org/directory/bloomberg-industry-group/
+http://fg25fqpu2dnxp24xs3jlcley4hp2inshpzek44q3czkhq3zffoqk26id.onion # https://web.archive.org/web/20221010174048/https://securedrop.org/directory/forbidden-stories/
+## FPF temporarily delisted - detected issues with this instance.
+## Re-enable once relisted at https://securedrop.org/directory/stavanger-aftenblad/.
+#http://4beybcv5e7xya4xu2nzdqkohawm32imugjtatkvmp2xwgfhcoj64slid.onion # https://web.archive.org/web/20221010183334/https://securedrop.org/directory/stavanger-aftenblad/
+http://jxsb4ovmavjy3r64bak4ha63xwggf3nzf3vikvs23r2avm5rhzmaqtqd.onion # https://web.archive.org/web/20210605193446/https://securedrop.org/directory/stefania-maurizi/
+http://xp44cagis447k3lpb4wwhcqukix6cgqokbuys24vmxmbzmaq2gjvc2yd.onion # https://web.archive.org/web/20221010185044/https://securedrop.org/directory/guardian/
+http://gppg43zz5d2yfuom3yfmxnnokn3zj4mekt55onlng3zs653ty4fio6qd.onion # https://web.archive.org/web/20260220202808/https://securedrop.org/directory/cbc/
+http://ydbpz5knb6ji3bdtahhm3wo7sed6lsy5vqnwfpnhpez4bquvoexbz7qd.onion # https://web.archive.org/web/20260220202755/https://securedrop.org/directory/dagbladet/
+http://q6vdlj2ukulrqk37piqgxucpcwtxzdjhvjzqrfbevuhrzimsgjltmpqd.onion # https://web.archive.org/web/20260425092849/https://securedrop.org/directory/der-spiegel/
+http://nqu6crmtnzs2hs5abo2uqni53yqsnnwqnerdxuzyz5yxairxlzjzt6yd.onion # https://web.archive.org/web/20251231214824/https://securedrop.org/directory/financial-times/
+http://6zonlfhh7aqtfwoyvdlad3nxn6ljecx2k6tyyy3spt43nn54q6lvncid.onion # https://web.archive.org/web/20260112000306/https://securedrop.org/directory/forbes/
+http://jatasaqcoe7lqdpcyxo7vl3e5tdvl5jgmtadfat77i25qdj6z6a4ulad.onion # https://web.archive.org/web/20260425092843/https://securedrop.org/directory/greekleaks/
+http://uhmj4j5pnwbpmkebfze3qgjmkum465fvok376nxtpku5yvyv5takz6qd.onion # https://web.archive.org/web/20251223130754/https://securedrop.org/directory/news24/
+http://33xu4yhum2eiisxm6fntaslayop76fvaqgt3ak5dakdm3t7cub25cead.onion # https://web.archive.org/web/20260220202808/https://securedrop.org/directory/propublica/
+http://udhauo3m3fh7v6yfiuornjzxn3fh6vlp4ooo3wogvghcnv5xik6mnayd.onion # https://web.archive.org/web/20260302104957/https://securedrop.org/directory/s%C3%BCddeutsche-zeitung/
+http://mxmddqsh4jnr4gjan37ayin3fu5ecnejxge4wjhj4i45qq5djbxdjtad.onion # https://web.archive.org/web/20250804064731/https://securedrop.org/directory/the-economist/
+http://a4zum5ydurvljrohxqp2rjjal5kro4ge2q2qizuonf2jubkhcr627gad.onion # https://web.archive.org/web/20260425092842/https://securedrop.org/directory/globe-and-mail/
+http://kogbxf4ysay2qzozmg7ar45ijqmj2vxrwqa4upzqq2i7sqj7wv7wcdqd.onion # https://web.archive.org/web/20260220202806/https://securedrop.org/directory/whistleblower-aid/
+"
+
+# ==============================================================================
+
+# Helper configuration
+CACHE_BUSTER=$(jot -r 1 100000 999999)
+MONTHS="Jan:01 Feb:02 Mar:03 Apr:04 May:05 Jun:06 Jul:07 Aug:08 Sep:09 Oct:10 Nov:11 Dec:12"
+
+# Helper function to scramble a pool and pull a valid timestamp
+fetch_time_from_pool() {
+    LOCAL_POOL="$1"
+    POOL_ID="$2"
+
+    # Clean the pool: strip trailing comments, drop lines starting with #, clear empty lines
+    CLEANED_POOL=$(echo "$LOCAL_POOL" | sed 's/#.*//' | grep -v '^[[:space:]]*$' | tr -s ' ' | tr ' ' '\n')
+    # Scramble layout dynamically
+    SHUFFLED=$(for onion in $CLEANED_POOL; do
+        if [ ! -z "$onion" ]; then echo "$(jot -r 1 1 1000000) $onion"; fi
+    done | sort -n | cut -d' ' -f2-)
+
+    for ONION in $SHUFFLED; do
+        echo "--------------------------------------------------" >&2
+        #echo "[DEBUG] Pool $POOL_ID: Testing Node -> $ONION" >&2
+
+        RAW_HEADER=$(curl --socks5-hostname 127.0.0.1:9050 --http1.1 -sI -A "" -H "Cache-Control: no-cache" -H "Pragma: no-cache" --max-time 10 "$ONION/?$CACHE_BUSTER")
+        #echo "[DEBUG] Raw Header response (first 4 lines):" >&2
+        #echo "$RAW_HEADER" | head -n 4 >&2
+
+        HTTP_LINE=$(echo "$RAW_HEADER" | grep -i '^date:' | tr -d '\r' | tr -s ' ')
+        #echo "[DEBUG] Isolated Date line: '$HTTP_LINE'" >&2
+
+        if [ ! -z "$HTTP_LINE" ]; then
+            # Strip out "Date: " or "date: " from the front of the line
+            CLEAN_HTTP_DATE=$(echo "$HTTP_LINE" | cut -d' ' -f2-)
+            #echo "[DEBUG] Cleaned HTTP date string to parse: '$CLEAN_HTTP_DATE'" >&2
+
+            # OpenBSD native date engine interprets "Tue, 30 Jun 2026 14:04:51 GMT"
+            # using the explicit standard formatting mask: "%a, %d %b %Y %T GMT"
+            EPOCH=$(date -j -u -f "%a, %d %b %Y %T GMT" "$CLEAN_HTTP_DATE" "+%s" 2>/dev/null)
+            #echo "[DEBUG] Converted Epoch Integer via OpenBSD core parsing: '$EPOCH'" >&2
+
+            if [ ! -z "$EPOCH" ]; then
+                logger -t sdwdate-clone "Pool $POOL_ID: Successfully fetched from $ONION"
+                echo "Pool $POOL_ID: Successfully fetched from $ONION" >&2
+
+                # CRITICAL FIX: Pass the raw numeric value back to the variable assignment
+                echo "$EPOCH"
+                return 0
+            fi
+        fi
+        logger -t sdwdate-clone "Pool $POOL_ID: Node $ONION timed out or offline. Trying next backup..."
+        echo "Pool $POOL_ID: Node $ONION timed out or offline. trying next backup..." >&2
+    done
+    return 1
+}
+
+# Fetch from all 3 independent arrays
+logger -t sdwdate-clone "Querying 3 independent onion pools for time consensus..."
+echo "Querying 3 independent onion pools for time consensus..."
+EPOCH_0=$(fetch_time_from_pool "$POOL_0" "0")
+
+EPOCH_1=$(fetch_time_from_pool "$POOL_1" "1")
+
+EPOCH_2=$(fetch_time_from_pool "$POOL_2" "2")
+
+echo "=================================================="
+# Critical check: Did all three pools successfully return a number?
+if [ -z "$EPOCH_0" ] || [ -z "$EPOCH_1" ] || [ -z "$EPOCH_2" ]; then
+    logger -t sdwdate-clone "CRITICAL: Consensus failed. One or more pools were unreachable."
+    echo "CRITICAL: Consensus failed. One or more pools were unreachable."
+    exit 1
+fi
+
+# Mathematical Median Consensus Engine
+MEDIAN_EPOCH=$(printf "%s\n%s\n%s\n" "$EPOCH_0" "$EPOCH_1" "$EPOCH_2" | sort -n | sed -n '2p')
+
+# Convert median back to OpenBSD date format: ccymmddHHMM.SS
+FINAL_DATE_STRING=$(date -u -r "$MEDIAN_EPOCH" "+%Y%m%d%H%M.%S")
+
+# Microsecond Randomization Jitter
+HEX_VAL=$(od -An -N3 -tx /dev/urandom | tr -d ' ')
+US_DELAY=$(( 0x${HEX_VAL} % 500000 ))
+DECIMAL_DELAY=$(awk "BEGIN {print $US_DELAY / 1000000}")
+sleep "$DECIMAL_DELAY"
+
+# Enforce Consensus Time
+date -u "$FINAL_DATE_STRING" >/dev/null
+logger -t sdwdate-clone "Consensus reached. Clock set to median epoch $MEDIAN_EPOCH (Jittered: ${DECIMAL_DELAY}s)"
+echo "Consensus reached. Clock set to median epoch $MEDIAN_EPOCH (Jittered: ${DECIMAL_DELAY}s)"
+exit 0
