@@ -21,7 +21,7 @@ __Installation:__
 
 __Checking and debugging:__
 
-You can check the status of 'secure-time' by either: Looking at `/var/log/messages`, running 'secure-time' manually in a shell, or if everything else fails then by running it manually in a shell and uncommenting the debug echo lines in the code.
+You can check the status of 'secure-time' by either: Looking at `/var/log/messages`, running 'secure-time' manually in a shell, or if everything else fails then by uncommenting the debug echo lines in the code then running it manually in a shell.
 
 
 __Uninstallation:__
