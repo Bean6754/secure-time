@@ -13,6 +13,9 @@ Installation:
   - `0 * * * * -ns /bin/sleep $(( 0x$(od -An -N2 -tx /dev/urandom | tr -d ' ') % 3600 )) && /usr/bin/timeout 300 /usr/local/sbin/secure-time.sh`
 6. Once confirmed working, disable and stop `ntpd` with `rcctl disable ntpd ; rcctl stop ntpd`.
 
+Checking and debugging:
+You can check the status of 'secure-time' by either: Looking at `/var/log/messages`, running 'secure-time' manually in a shell, or if everything else fails then by running it manually in a shell and uncommenting the debug echo lines in the code.
+
 Uninstallation:
 1. Re-enable and start `ntpd` with `rcctl enable ntpd && rcctl start ntpd`.
 2. Remove 'secure-time' cronjob with `crontab -e` as root.
