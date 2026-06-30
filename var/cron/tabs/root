@@ -1,0 +1,2 @@
+# Random time every hour.
+0 * * * * -ns /bin/sleep $(( 0x$(od -An -N2 -tx /dev/urandom | tr -d ' ') % 3600 )) && /usr/bin/timeout 300 /usr/local/sbin/secure-time.sh
