@@ -2,8 +2,8 @@
 An OpenBSD clone of Whonix's sdwdate.
 
 Dependencies:
-- tor -> rcctl enable tor && rcctl start tor
-- privoxy -> forward-socks5t / 127.0.0.1:9050 .
+- tor -> `rcctl enable tor && rcctl start tor`
+- privoxy -> `forward-socks5t / 127.0.0.1:9050 .` in '/etc/privoxy/config'.
 
 Installation:
 1. Copy script to '/usr/local/sbin'.
