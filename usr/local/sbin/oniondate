@@ -37,7 +37,7 @@ http://metagerv65pwclop2rsfzg4jwowpavpwd6grhhlvdgsswvo6ii4akgyd.onion # https://
 http://zkaan2xfbuxia2wpf7ofnkbz6r5zdbbvxbunvp5g2iebopbfc4iqmbad.onion # https://web.archive.org/web/20210607180626/https://keys.openpgp.org/about/faq
 "
 
-# 18
+# Pool 1: Privacy foundations and secure email providers
 POOL_1="
 http://searxspbitokayvkhzhsnljde7rqmn7rvoga6e4waeub3h7ug3nghoad.onion # https://web.archive.org/web/20210525165705/https://searx.space/ https://searx.space
 http://lldan5gahapx5k7iafb3s4ikijc4ni7gx5iywdflkba5y2ezyg6sjgyd.onion # https://web.archive.org/web/20210310145458/https://onionshare.org/onion.txt OnionShare onionshare.org
@@ -61,7 +61,7 @@ http://3xeiol2bnhrsqhcsaifwtnlqkylrerdspzua7bcjrh26qlrrrctfobid.onion # https://
 http://zkdppoahhqu5ihjqd4qqvyfd2bm4wejrhjosim67t6yopl77jitg2nad.onion # https://web.archive.org/web/20200717041213/https://riseup.net/en/security/network-security/tor https://we.riseup.net https://riseup.net/en/security/network-security/tor
 "
 
-# 33
+# Pool 2: Large-scale global platforms and news mirrors
 POOL_2="
 https://ej3kv4ebuugcmuwxctx5ic7zxh73rnxt42soi3tdneu2c2em55thufqd.onion # https://web.archive.org/web/20210604165016/https://securedrop.org/directory/new-york-times/
 https://vfnmxpa6fo4jdpyq3yneqhglluweax2uclvxkytfpmpkp5rsl75ir5qd.onion # https://web.archive.org/web/20210604171305/https://securedrop.org/directory/washington-post/
@@ -134,7 +134,7 @@ fetch_time_from_pool() {
             #echo "[DEBUG] Converted Epoch Integer via OpenBSD core parsing: '$EPOCH'" >&2
 
             if [ ! -z "$EPOCH" ]; then
-                logger -t sdwdate-clone "Pool $POOL_ID: Successfully fetched from $ONION"
+                logger -t oniondate "Pool $POOL_ID: Successfully fetched from $ONION"
                 echo "Pool $POOL_ID: Successfully fetched from $ONION" >&2
 
                 # CRITICAL FIX: Pass the raw numeric value back to the variable assignment
@@ -142,14 +142,14 @@ fetch_time_from_pool() {
                 return 0
             fi
         fi
-        logger -t sdwdate-clone "Pool $POOL_ID: Node $ONION timed out or offline. Trying next backup..."
+        logger -t oniondate "Pool $POOL_ID: Node $ONION timed out or offline. Trying next backup..."
         echo "Pool $POOL_ID: Node $ONION timed out or offline. trying next backup..." >&2
     done
     return 1
 }
 
 # Fetch from all 3 independent arrays
-logger -t sdwdate-clone "Querying 3 independent onion pools for time consensus..."
+logger -t oniondate "Querying 3 independent onion pools for time consensus..."
 echo "Querying 3 independent onion pools for time consensus..."
 EPOCH_0=$(fetch_time_from_pool "$POOL_0" "0")
 
@@ -160,7 +160,7 @@ EPOCH_2=$(fetch_time_from_pool "$POOL_2" "2")
 echo "=================================================="
 # Critical check: Did all three pools successfully return a number?
 if [ -z "$EPOCH_0" ] || [ -z "$EPOCH_1" ] || [ -z "$EPOCH_2" ]; then
-    logger -t sdwdate-clone "CRITICAL: Consensus failed. One or more pools were unreachable."
+    logger -t oniondate "CRITICAL: Consensus failed. One or more pools were unreachable."
     echo "CRITICAL: Consensus failed. One or more pools were unreachable."
     exit 1
 fi
@@ -171,7 +171,7 @@ MEDIAN_EPOCH=$(printf "%s\n%s\n%s\n" "$EPOCH_0" "$EPOCH_1" "$EPOCH_2" | sort -n 
 # Convert median back to OpenBSD date format: ccymmddHHMM.SS
 FINAL_DATE_STRING=$(date -u -r "$MEDIAN_EPOCH" "+%Y%m%d%H%M.%S")
 
-# Microsecond Randomization Jitter
+# Microsecond Randomisation Jitter
 HEX_VAL=$(od -An -N3 -tx /dev/urandom | tr -d ' ')
 US_DELAY=$(( 0x${HEX_VAL} % 500000 ))
 DECIMAL_DELAY=$(awk "BEGIN {print $US_DELAY / 1000000}")
@@ -179,6 +179,6 @@ sleep "$DECIMAL_DELAY"
 
 # Enforce Consensus Time
 date -u "$FINAL_DATE_STRING" >/dev/null
-logger -t sdwdate-clone "Consensus reached. Clock set to median epoch $MEDIAN_EPOCH (Jittered: ${DECIMAL_DELAY}s)"
+logger -t oniondate "Consensus reached. Clock set to median epoch $MEDIAN_EPOCH (Jittered: ${DECIMAL_DELAY}s)"
 echo "Consensus reached. Clock set to median epoch $MEDIAN_EPOCH (Jittered: ${DECIMAL_DELAY}s)"
 exit 0
