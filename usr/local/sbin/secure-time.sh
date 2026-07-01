@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/X11R6/bin:/usr/local/sbin:/usr/local/bin"
+
 # I am using privoxy
 http_proxy="http://127.0.0.1:8118"
 https_proxy="http://127.0.0.1:8118"
