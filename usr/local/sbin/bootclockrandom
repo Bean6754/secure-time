@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# Ensure only root can alter the clock
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Need root privileges." >&2
+  exit 1
+fi
+
+## Fetch a high-entropy raw number between 0 and 360 (361 possible values)
+RAW=$(od -An -N2 -i /dev/urandom | awk '{print $1 % 361}')
+
+## Shift the spectrum down by 180 so the range is exactly -180 to +180
+OFFSET=$((RAW - 180))
+
+## Guard against 0 (since date changes require a physical shift)
+if [ "$OFFSET" -eq 0 ]; then
+    OFFSET=1
+fi
+
+## Read the single signed value to determine the log text and target time
+CURRENT_TIME=$(date +%s)
+TARGET_TIME=$((CURRENT_TIME + OFFSET))
+
+if [ "$OFFSET" -lt 0 ]; then
+  # Multiply by -1 to turn a negative number (e.g. -166) into a clean positive string (166) for the text logs
+  PRETTY_BACKWARDS_SECONDS=$((OFFSET * -1))
+  logger -t bootclockrandom "Shifting clock backwards by ${PRETTY_BACKWARDS_SECONDS} seconds."
+  echo "Shifting clock backwards by ${PRETTY_BACKWARDS_SECONDS} seconds."
+else
+  logger -t bootclockrandom "Shifting clock forwards by ${OFFSET} seconds."
+  echo "Shifting clock forwards by ${OFFSET} seconds."
+fi
+
+## Formats the raw timestamp into OpenBSD's canonical set format (ccyyymmddHHMM.SS)
+# Then passes it safely to date(1) to set the clock immediately.
+NEW_DATE=$(date -r "$TARGET_TIME" "+%Y%m%d%H%M.%S")
+date "$NEW_DATE" >/dev/null
