@@ -1,0 +1,4 @@
+# Randomize system clock to obfuscate boot fingerprints
+if [ -x /usr/local/sbin/bootclockrandom ]; then
+  /usr/local/sbin/bootclockrandom
+fi
