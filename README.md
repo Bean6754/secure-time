@@ -1,6 +1,6 @@
 # secure-time
 
-An OpenBSD clone of Whonix's 'sdwdate' and 'bootclockrandomization'.
+An OpenBSD rewrite of Whonix's 'sdwdate' and 'bootclockrandomization'.
 
 
 __Dependencies:__
