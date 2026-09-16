@@ -2,6 +2,8 @@
 
 An OpenBSD rewrite of Whonix's 'sdwdate' and 'bootclockrandomization'.
 
+This also works on Linux provided you have installed `jot`, `od` and `curl` and update the crontab to suit Linux (no `-ns` before crontab command).
+
 
 __Dependencies:__
 
