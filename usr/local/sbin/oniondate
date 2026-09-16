@@ -124,10 +124,24 @@ fetch_time_from_pool() {
             CLEAN_HTTP_DATE=$(echo "$HTTP_LINE" | cut -d' ' -f2-)
             #echo "[DEBUG] Cleaned HTTP date string to parse: '$CLEAN_HTTP_DATE'" >&2
 
-            # OpenBSD native date engine interprets "Tue, 30 Jun 2026 14:04:51 GMT"
-            # using the explicit standard formatting mask: "%a, %d %b %Y %T GMT"
-            EPOCH=$(date -j -u -f "%a, %d %b %Y %T GMT" "$CLEAN_HTTP_DATE" "+%s" 2>/dev/null)
-            #echo "[DEBUG] Converted Epoch Integer via OpenBSD core parsing: '$EPOCH'" >&2
+            ## Check OS
+            # OpenBSD
+            case "$(uname -s)" in OpenBSD|FreeBSD|NetBSD|Darwin)
+              # OpenBSD native date engine interprets "Tue, 30 Jun 2026 14:04:51 GMT"
+              # using the explicit standard formatting mask: "%a, %d %b %Y %T GMT"
+              EPOCH=$(date -j -u -f "%a, %d %b %Y %T GMT" "$CLEAN_HTTP_DATE" "+%s" 2>/dev/null)
+              #echo "[DEBUG] Converted Epoch Integer via OpenBSD core parsing: '$EPOCH'" >&2
+              ;;
+            # Linux
+            Linux)
+              # Linux native date engine handles UNIX Epoch
+              EPOCH=$(date -u -d "$CLEAN_HTTP_DATE" "+%s" 2>/dev/null)
+              ;;
+            *)
+              echo "Unsupported operating system: $(uname -s)" >&2
+              return 1
+              ;;
+            esac
 
             if [ ! -z "$EPOCH" ]; then
                 logger -t oniondate "Pool $POOL_ID: Successfully fetched from $ONION"
@@ -164,8 +178,22 @@ fi
 # Mathematical Median Consensus Engine
 MEDIAN_EPOCH=$(printf "%s\n%s\n%s\n" "$EPOCH_0" "$EPOCH_1" "$EPOCH_2" | sort -n | sed -n '2p')
 
-# Convert median back to OpenBSD date format: ccymmddHHMM.SS
-FINAL_DATE_STRING=$(date -u -r "$MEDIAN_EPOCH" "+%Y%m%d%H%M.%S")
+## Check OS
+# OpenBSD
+case "$(uname -s)" in OpenBSD|FreeBSD|NetBSD|Darwin)
+  # Convert median back to OpenBSD date format: ccymmddHHMM.SS
+  FINAL_DATE_STRING=$(date -u -r "$MEDIAN_EPOCH" "+%Y%m%d%H%M.%S")
+  ;;
+# Linux
+Linux)
+  # Convert median back to to Linux's date format: Y-m-d H:M:S
+  FINAL_DATE_STRING=$(date -u -d "@$MEDIAN_EPOCH" +"%Y-%m-%d %H:%M:%S")
+  ;;
+*)
+  echo "Unsupported operating system: $(uname -s)" >&2
+  return 1
+  ;;
+esac
 
 # Microsecond Randomisation Jitter
 HEX_VAL=$(od -An -N3 -tx /dev/urandom | tr -d ' ')
@@ -174,7 +202,21 @@ DECIMAL_DELAY=$(awk "BEGIN {print $US_DELAY / 1000000}")
 sleep "$DECIMAL_DELAY"
 
 # Enforce Consensus Time
-date -u "$FINAL_DATE_STRING" >/dev/null
+## Check OS
+# OpenBSD
+case "$(uname -s)" in OpenBSD|FreeBSD|NetBSD|Darwin)
+  date -u "$FINAL_DATE_STRING" >/dev/null
+  ;;
+# Linux
+Linux)
+  date -u -s "$FINAL_DATE_STRING" >/dev/null
+  ;;
+*)
+  echo "Unsupported operating system: $(uname -s)" >&2
+  return 1
+  ;;
+esac
+
 logger -t oniondate "Consensus reached. Clock set to median epoch $MEDIAN_EPOCH (Jittered: ${DECIMAL_DELAY}s)"
 echo "Consensus reached. Clock set to median epoch $MEDIAN_EPOCH (Jittered: ${DECIMAL_DELAY}s)"
 exit 0
