@@ -8,10 +8,6 @@ fi
 
 export PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/X11R6/bin:/usr/local/sbin:/usr/local/bin"
 
-# I am using privoxy
-http_proxy="http://127.0.0.1:8118"
-https_proxy="http://127.0.0.1:8118"
-
 # ==============================================================================
 # EXPANDED THREE-POOL INFRASTRUCTURE
 # https://github.com/Kicksecure/sdwdate/blob/master/etc/sdwdate.d/30_default.conf
@@ -116,7 +112,7 @@ fetch_time_from_pool() {
         echo "--------------------------------------------------" >&2
         #echo "[DEBUG] Pool $POOL_ID: Testing Node -> $ONION" >&2
 
-        RAW_HEADER=$(curl --socks5-hostname 127.0.0.1:9050 --http1.1 -sI -A "" -H "Cache-Control: no-cache" -H "Pragma: no-cache" --max-time 10 "$ONION/?$CACHE_BUSTER")
+        RAW_HEADER=$(curl --socks5-hostname socks5h://127.0.0.1:9050 --http1.1 -sI -A "" -H "Cache-Control: no-cache" -H "Pragma: no-cache" --max-time 10 "$ONION/?$CACHE_BUSTER")
         #echo "[DEBUG] Raw Header response (first 4 lines):" >&2
         #echo "$RAW_HEADER" | head -n 4 >&2
 
