@@ -8,7 +8,6 @@ __Dependencies:__
 **`oniondate` (sdwdate-clone)**
 
 - tor -> `rcctl enable tor && rcctl start tor`
-- privoxy -> `forward-socks5t / 127.0.0.1:9050 .` in '/etc/privoxy/config'.
 
 **`bootclockrandom` (bootclockrandomization-clone)**
 
