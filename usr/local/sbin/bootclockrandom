@@ -31,7 +31,22 @@ else
   echo "Shifting clock forwards by ${OFFSET} seconds."
 fi
 
-## Formats the raw timestamp into OpenBSD's canonical set format (ccyyymmddHHMM.SS)
-# Then passes it safely to date(1) to set the clock immediately.
-NEW_DATE=$(date -r "$TARGET_TIME" "+%Y%m%d%H%M.%S")
-date "$NEW_DATE" >/dev/null
+## Check OS
+# OpenBSD
+case "$(uname -s)" in OpenBSD|FreeBSD|NetBSD|Darwin)
+  ## Formats the raw timestamp into OpenBSD's canonical set format (ccyyymmddHHMM.SS)
+  # Then passes it safely to date(1) to set the clock immediately.
+  NEW_DATE=$(date -r "$TARGET_TIME" "+%Y%m%d%H%M.%S")
+  date "$NEW_DATE" >/dev/null
+  ;;
+# Linux
+Linux)
+  ## Formats the raw timestamp into Linux's canonical set format (Y-m-d H:M:S)
+  NEW_DATE=$(date -u -d "@$TARGET_TIME" "+%Y-%m-%d %H:%M:%S")
+  date -u -s "$NEW_DATE" >/dev/null
+  ;;
+*)
+  echo "Unsupported operating system: $(uname -s)" >&2
+  return 1
+  ;;
+esac
